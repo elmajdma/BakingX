@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?><!-- CoordinatorLayout is used to create scrolling and "floating" effects within a layout --><!-- This is typically the root layout which wraps the app bar and content -->
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/main_content"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+
+  <!-- This could also be included from another file using the include tag -->
+  <!-- i.e `res/layout/content_main.xml` -->
+  <!-- `app:layout_behavior` is set to a pre-defined standard scrolling behavior -->
+
+  <!-- AppBarLayout is a wrapper for a Toolbar in order to apply scrolling effects. -->
+  <!-- Note that AppBarLayout expects to be the first child nested within a CoordinatorLayout -->
+  <android.support.design.widget.AppBarLayout
+    android:id="@+id/appBar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <!-- Toolbar is the actual app bar with text and the action items -->
+    <android.support.v7.widget.Toolbar
+      android:id="@+id/toolbar_baking_widget"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="?attr/colorPrimary"/>
+  </android.support.design.widget.AppBarLayout>
+
+</android.support.constraint.ConstraintLayout>

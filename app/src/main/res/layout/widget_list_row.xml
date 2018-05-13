@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <TextView
+    android:id="@+id/tv_widget_recipe_title"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:layout_marginStart="8dp"
+    android:layout_marginLeft="8dp"
+    android:gravity="center_vertical"
+    android:text="@string/your_recipe"
+    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget"
+    android:textSize="18sp"/>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <TextView
+      android:id="@+id/tv_widget_recipe_ingredient"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:layout_marginLeft="8dp"
+      android:fontFamily="@font/allan_bold"
+      android:gravity="center_vertical"
+      android:text="@string/your_recipe"
+      android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title"
+      android:textSize="14sp"/>
+
+    <!--<TextView
+      android:id="@+id/tv_widget_recipe_ingredient_quntity"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:layout_marginLeft="8dp"
+      android:fontFamily="@font/allan_bold"
+      android:gravity="center_vertical"
+      android:text="@string/your_recipe"
+      android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title"
+      android:textSize="18sp"/>
+    <TextView
+      android:id="@+id/tv_widget_recipe_ingredient_measure"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="8dp"
+      android:layout_marginLeft="8dp"
+      android:fontFamily="@font/allan_bold"
+      android:gravity="center_vertical"
+      android:text="@string/your_recipe"
+      android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title"
+      android:textSize="18sp"/>-->
+
+  </LinearLayout>
+
+
+</LinearLayout>
