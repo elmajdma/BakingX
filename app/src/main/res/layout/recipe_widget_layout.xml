@@ -25,10 +25,9 @@
       android:layout_marginStart="8dp"
       android:layout_marginLeft="8dp"
       android:padding="0dp"
-      android:fontFamily="@font/allan_bold"
+      android:fontFamily="@font/adamina"
       android:gravity="center_vertical"
       android:text="@string/your_recipe"
-      android:textAlignment="textStart"
       android:textAppearance="@android:style/TextAppearance.DeviceDefault.Widget.ActionBar.Title"
       android:textSize="24sp"/>
   </LinearLayout>

@@ -6,6 +6,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -49,6 +50,7 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
   public static final String ALL_STEPS_LIST_KEY = "steps_list_key";
   public static final String VIDEO_URL_KEY = "video_key";
   public static final String STEP_DESCRIPTION_KEY = "step_description_key";
+   public static final String STEPS_LIST_KEY = "steps_key";
 
    private VideoPlayerRecipeFragment mVideoPlayerRecipeFragment;
   private StepsFragment mStepsFragment;
@@ -78,9 +80,9 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
             stepsList = bakingApiModels.get(recipePosition).getSteps();
           }
         });
-    if (getResources().getBoolean(R.bool.isTablet)) {
+    if (getResources().getBoolean(R.bool.isTablet)&&
+        getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE) {
       mTwoPane = true;
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
       if (savedInstanceState == null) {
         createRequestedFragments(recipePosition);
       }
@@ -104,7 +106,7 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
     bundle.putInt(STEPS_LIST_KEY, positon);
 
     stepsFragment.setArguments(bundle);
-    fragmentTransaction.addToBackStack(null);
+   // fragmentTransaction.addToBackStack(null);
     fragmentTransaction.commit();
   }
 
@@ -192,4 +194,11 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
     fragmentTransaction.addToBackStack(null);
     fragmentTransaction.commit();
   }
+   @Override
+   public void onBackPressed() {
+     if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+       getSupportFragmentManager().popBackStack();
+     else
+       finish();    // Finish the activity
+   }
 }

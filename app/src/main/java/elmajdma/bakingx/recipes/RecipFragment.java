@@ -7,9 +7,16 @@ import static elmajdma.bakingx.MainActivity.LINER_LAYOUT_KEY;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Movie;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
@@ -22,14 +29,24 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.squareup.picasso.Picasso;
 import elmajdma.bakingx.CalcFittedColumn;
 import elmajdma.bakingx.R;
 import elmajdma.bakingx.RecipeDetailsActivity;
 import elmajdma.bakingx.data.model.BakingApiModel;
+import elmajdma.bakingx.data.model.Ingredients;
 import elmajdma.bakingx.data.model.Steps;
+import elmajdma.bakingx.data.recipesdatabase.RecipeContract;
+import elmajdma.bakingx.data.recipesdatabase.RecipeContract.RecipeEntry;
+import elmajdma.bakingx.recipes.RecipesRecyclerViewAdapter.RecipeAdapterOnClickHandler;
+import elmajdma.bakingx.recipewidget.RecipeWidgetService;
 import elmajdma.bakingx.steps.StepsFragment;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -98,8 +115,19 @@ public class RecipFragment extends Fragment {
     return view;
   }
   private void setDataforRecipesRecyclerView(List<BakingApiModel> bakingReciepList) {
-    RecipesRecyclerViewAdapter.RecipeAdapterOnClickHandler mListener = (position, v) -> {
-      startDetailedRecipeActivity(position);
+    RecipesRecyclerViewAdapter.RecipeAdapterOnClickHandler mListener=new RecipeAdapterOnClickHandler() {
+      @Override
+      public void onRecipeCardClick(int position, View v) {
+        startDetailedRecipeActivity(position);
+      }
+      @Override
+      public void onRecipeHeartClick(int position, View v) {
+        try {
+          setRecipeFavoritelist(bakingReciepList.get(position),v);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     };
     mRecipesRecyclerViewAdapter = new RecipesRecyclerViewAdapter(getContext(), bakingReciepList,
         mListener);
@@ -121,5 +149,60 @@ public class RecipFragment extends Fragment {
     Intent intent = new Intent(getActivity(), RecipeDetailsActivity.class);
     intent.putExtra(STEPS_LIST_KEY, stepList);
     startActivity(intent);
+  }
+  private void setRecipeFavoritelist(BakingApiModel recipe, View view) throws IOException {
+    switch ((Integer) view.getTag()) {
+      case (R.drawable.heart_black):
+        view.setTag(R.drawable.heart_red);
+        Picasso.with(getContext()).load(R.drawable.heart_red).into((ImageView) view);
+        insertRecipeintoFavoirte(recipe);
+        break;
+      case (R.drawable.heart_red):
+        view.setTag(R.drawable.heart_black);
+        Picasso.with(getContext()).load(R.drawable.heart_black).into((ImageView) view);
+        deleteRecipeFromFavoriteList(recipe);
+    }
+  }
+
+  private void insertRecipeintoFavoirte(BakingApiModel recipe) throws IOException {
+    ContentValues contentValues = new ContentValues();
+    contentValues.put(RecipeEntry.COLUMN_RECIPE_ID, recipe.getId());
+    contentValues.put(RecipeEntry.COLUMN_RECIPE_TITLE, recipe.getName());
+    contentValues.put(RecipeEntry.COLUMN_SERVING, recipe.getServings());
+    contentValues.put(RecipeEntry.COLUMN_RECIPE_INGREDIENT,
+        ingredientListToString(recipe.getIngredients()));
+    Uri uri = getActivity().getContentResolver().insert(RecipeEntry.CONTENT_URI, contentValues);
+    if (uri != null) {
+      Toast.makeText(getContext(), "Recipe saved in Favorite List", Toast.LENGTH_LONG).show();
+      RecipeWidgetService.startActionUpdateRecipeWidgets(getContext());
+    } else {
+      Toast.makeText(getContext(), "An Error Occurred While Saving Recipe !!", Toast.LENGTH_LONG).show();
+    }
+  }
+
+  private String ingredientListToString(List<Ingredients> listItem) {
+List<String> ingredientList=new ArrayList<>();
+    for (int i = 0; i < listItem.size(); i++) {
+      String ingredient = listItem.get(i).getIngredient() + " " +
+          String.valueOf(listItem.get(i).getQuantity()) + " " +
+          listItem.get(i).getMeasure();
+      ingredientList.add(ingredient);
+    }
+    return ingredientList.toString();
+  }
+  private void deleteRecipeFromFavoriteList(BakingApiModel recipe) {
+    Uri uri = ContentUris.withAppendedId(RecipeContract.RecipeEntry.CONTENT_URI,
+       recipe.getId() );
+    int deltedNum = getActivity().getContentResolver().delete(
+        uri,
+        RecipeEntry.COLUMN_RECIPE_ID,
+        new String[]{String.valueOf(recipe.getId())}
+    );
+    if (deltedNum > -1) {
+      Toast.makeText(getContext(), "Recipe Removed From Favorite List", Toast.LENGTH_LONG).show();
+      RecipeWidgetService.startActionUpdateRecipeWidgets(getContext());
+    } else {
+      Toast.makeText(getContext(), "An Error Occurred While Remove Recipe !!", Toast.LENGTH_LONG).show();
+    }
   }
 }

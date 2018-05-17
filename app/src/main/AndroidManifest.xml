@@ -12,6 +12,13 @@
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
+    <provider
+      android:authorities="elmajdma.bakingx.data.recipesdatabase"
+      android:exported="true"
+      android:name=".data.recipesdatabase.RecipeProvider"
+      android:protectionLevel="signature"
+      android:syncable="true"/>
+
     <activity
       android:name=".MainActivity"
       android:theme="@style/Theme.AppTheme.Light.NoActionBar">
@@ -29,8 +36,7 @@
     <receiver android:name=".recipewidget.RecipeIngredientWidget">
       <intent-filter>
         <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-        <!-- To receive broadcast with this string name -->
-        <action android:name="elmajdma.bakingx.recipewidget.DATA_FETCHED"/>
+
       </intent-filter>
 
       <meta-data
@@ -39,15 +45,19 @@
     </receiver>
 
     <service
-      android:name=".recipewidget.WidgetService"
+      android:name=".recipewidget.RecipeListWidgetService"
       android:permission="android.permission.BIND_REMOTEVIEWS">
     </service>
-    <service android:name=".recipewidget.RemoteFetchService">
-    </service>
 
-    <activity android:name=".RecipeDetailsActivity"
+    <activity
+      android:name=".RecipeDetailsActivity"
       android:theme="@style/Theme.AppTheme.Light.NoActionBar">
     </activity>
+
+    <service
+      android:name=".recipewidget.RecipeWidgetService">
+    </service>
+
   </application>
 
 </manifest>

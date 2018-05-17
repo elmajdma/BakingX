@@ -1,9 +1,13 @@
 package elmajdma.bakingx.recipes;
 
 import android.annotation.SuppressLint;
+import android.content.ContentUris;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.NonNull;
@@ -11,14 +15,18 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.squareup.picasso.Picasso;
 import elmajdma.bakingx.R;
 import elmajdma.bakingx.data.model.BakingApiModel;
+import elmajdma.bakingx.data.recipesdatabase.RecipeContract;
+import elmajdma.bakingx.data.recipesdatabase.RecipeContract.RecipeEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,58 +70,26 @@ public class RecipesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
     if (bakingApiModel != null) {
       recipeViewHolder.tvRecipeTitle.setText(bakingApiModel.getName());
       recipeViewHolder.tvRecipeServing.setText(String.valueOf(bakingApiModel.getServings()));
-
-      String imageUrl=bakingApiModel.getImage();
-            if(imageUrl.isEmpty()){
-              Picasso.with(context).load(R.drawable.bread).into(recipeViewHolder.imgRecipeItem);
-            }else{
-              Picasso.with(context).load(imageUrl).into(recipeViewHolder.imgRecipeItem);
-              new AsyncTask<Void, Void, Bitmap>() {
-
-                @Override
-                protected Bitmap doInBackground(Void... params) {
-                  Bitmap bitmap = null;
-                  String videoPath = "http://techslides.com/demos/sample-videos/small.mp4";
-                  MediaMetadataRetriever mediaMetadataRetriever = null;
-                  try {
-                    mediaMetadataRetriever = new MediaMetadataRetriever();
-                      mediaMetadataRetriever.setDataSource(videoPath, new HashMap<String, String>());
-                    bitmap = mediaMetadataRetriever.getFrameAtTime();
-                  } catch (Exception e) {
-                    e.printStackTrace();
-
-                  } finally {
-                    if (mediaMetadataRetriever != null)
-                      mediaMetadataRetriever.release();
-                  }
-                  return bitmap;
-                }
-
-                @Override
-                protected void onPostExecute(Bitmap bitmap) {
-                  super.onPostExecute(bitmap);
-                  if (bitmap != null)
-                    recipeViewHolder.imgRecipeItem.setImageBitmap(bitmap);
-                }
-              }.execute();
-            }
+      isReceipeSelected(bakingApiModel, recipeViewHolder.imgFavoriteHeart);
+      if (!bakingApiModel.getImage().isEmpty()) {
+        Picasso.with(context).load(bakingApiModel.getImage()).into(recipeViewHolder.imgRecipeItem);
+      } else {
+        Picasso.with(context).load(R.drawable.bread).into(recipeViewHolder.imgRecipeItem);
+      }
     }
   }
-
-  /**
-   * The interface that receives onClick messages.
-   */
-
   public interface RecipeAdapterOnClickHandler {
-
     void onRecipeCardClick(int position, View v);
-
+    void onRecipeHeartClick(int position, View v);
   }
 
-  public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+  public class RecipeViewHolder extends RecyclerView.ViewHolder{
 
+    //public class RecipeViewHolder extends RecyclerView.ViewHolder  {
     @BindView(R.id.image_baking_recip_item)
     ImageView imgRecipeItem;
+    @BindView(R.id.img_favorite_heart)
+    ImageView imgFavoriteHeart;
     @BindView(R.id.tv_recip_title)
     TextView tvRecipeTitle;
     @BindView(R.id.tv_serving)
@@ -128,12 +104,37 @@ public class RecipesRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerVie
       super(itemView);
       ButterKnife.bind(this, itemView);
       mListener = listener;
-      recipeCard.setOnClickListener(this);
-    }
 
-    @Override
-    public void onClick(View v) {
-      mListener.onRecipeCardClick(getAdapterPosition(), v);
+      recipeCard.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mListener.onRecipeCardClick(getAdapterPosition(), v);
+        }
+      });
+      imgFavoriteHeart.setOnClickListener(new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mListener.onRecipeHeartClick(getAdapterPosition(), v);
+        }
+      });
+    }
+    }
+  private void isReceipeSelected(BakingApiModel recipe, ImageView imageView) {
+    Uri uri = ContentUris.withAppendedId(RecipeContract.RecipeEntry.CONTENT_URI,
+        recipe.getId());
+    Cursor mCursor = context.getContentResolver().query(
+        uri,
+        null,
+        RecipeEntry.COLUMN_RECIPE_ID,
+        new String[]{String.valueOf(recipe.getId())},
+        null);
+    if (mCursor != null && mCursor.moveToFirst()) {
+      imageView.setTag(R.drawable.heart_red);
+      Picasso.with(context).load(R.drawable.heart_red).into(imageView);
+
+    } else {
+      imageView.setTag(R.drawable.heart_black);
+      Picasso.with(context).load(R.drawable.heart_black).into(imageView);
     }
   }
 }

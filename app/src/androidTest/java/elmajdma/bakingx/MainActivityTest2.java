@@ -7,7 +7,6 @@ import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
-import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -29,14 +28,25 @@ import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4.class)
-public class MainActivityTest {
+public class MainActivityTest2 {
 
   @Rule
   public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(
       MainActivity.class);
 
   @Test
-  public void mainActivityTest() {
+  public void mainActivityTest2() {
+    ViewInteraction appCompatImageView = onView(
+        allOf(withId(R.id.img_favorite_heart),
+            childAtPosition(
+                childAtPosition(
+                    withId(R.id.cardview_recipes_item),
+                    0),
+                5),
+            isDisplayed()));
+    appCompatImageView.perform(click());
+
+
     ViewInteraction recyclerView = onView(
         allOf(withId(R.id.recyclerview_recipes),
             childAtPosition(
@@ -48,7 +58,7 @@ public class MainActivityTest {
     // The recommended way to handle such scenarios is to use Espresso idling resources:
     // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
     try {
-      Thread.sleep(700);
+      Thread.sleep(1000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -81,25 +91,6 @@ public class MainActivityTest {
       e.printStackTrace();
     }
 
-    ViewInteraction appCompatImageButton = onView(
-        allOf(withId(R.id.exo_pause), withContentDescription("Pause"),
-            childAtPosition(
-                childAtPosition(
-                    withClassName(is("android.widget.LinearLayout")),
-                    0),
-                5),
-            isDisplayed()));
-    appCompatImageButton.perform(click());
-
-    // Added a sleep statement to match the app's execution delay.
-    // The recommended way to handle such scenarios is to use Espresso idling resources:
-    // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
     ViewInteraction frameLayout = onView(
         allOf(withId(R.id.exo_fullscreen_button),
             childAtPosition(
@@ -109,15 +100,6 @@ public class MainActivityTest {
                 3),
             isDisplayed()));
     frameLayout.perform(click());
-
-    // Added a sleep statement to match the app's execution delay.
-    // The recommended way to handle such scenarios is to use Espresso idling resources:
-    // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
 
     ViewInteraction frameLayout2 = onView(
         allOf(withId(R.id.exo_fullscreen_button),
@@ -132,6 +114,15 @@ public class MainActivityTest {
     pressBack();
 
     pressBack();
+
+    // Added a sleep statement to match the app's execution delay.
+    // The recommended way to handle such scenarios is to use Espresso idling resources:
+    // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+    try {
+      Thread.sleep(700);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
 
     pressBack();
 

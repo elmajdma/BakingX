@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 import elmajdma.bakingx.data.utils.InternetCheck;
 import elmajdma.bakingx.interentfail.NoInternetConnectionFragment;
 import elmajdma.bakingx.recipes.RecipFragment;
-import elmajdma.bakingx.recipewidget.RemoteFetchService;
+
 
 public class MainActivity extends AppCompatActivity {
   private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
@@ -44,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     setSupportActionBar(mBakingToolBar);
     mBakingToolBar.hideOverflowMenu();
     if (getResources().getBoolean(R.bool.isTablet)) {
-      setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
       layoutRequested=GRID_LAYOUT_KEY;
     }
     InternetCheck internetCheck = new InternetCheck(internet -> {
@@ -81,6 +80,13 @@ public class MainActivity extends AppCompatActivity {
     fragmentTransaction.replace(R.id.fragment_loader, fragment);
     fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
         android.R.anim.fade_out);
-    fragmentTransaction.commitAllowingStateLoss();;
+    fragmentTransaction.commitAllowingStateLoss();
+  }
+  @Override
+  public void onBackPressed() {
+    if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+      getSupportFragmentManager().popBackStack();
+    else
+      finish();    // Finish the activity
   }
 }
