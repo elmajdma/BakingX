@@ -24,6 +24,7 @@ import elmajdma.bakingx.recipes.RecipeViewModel;
 import elmajdma.bakingx.recipes.RecipesRecyclerViewAdapter;
 import elmajdma.bakingx.steps.StepsFragment;
 import elmajdma.bakingx.steps.StepsFragment.OnStepsFragmentListener;
+import elmajdma.bakingx.videoPlayer.RecipeStepsVideoPlayerFragment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,16 +52,17 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
   public static final String VIDEO_URL_KEY = "video_key";
   public static final String STEP_DESCRIPTION_KEY = "step_description_key";
    public static final String STEPS_LIST_KEY = "steps_key";
-
+   public static final String RECIPE_ID= "reipeId";
    private VideoPlayerRecipeFragment mVideoPlayerRecipeFragment;
+   private RecipeStepsVideoPlayerFragment mRecipeStepsVideoPlayerFragment;
   private StepsFragment mStepsFragment;
   private IngredientFragment mIngredientFragment;
   private RecipeViewModel mRecipeViewModel;
   private RecipesRecyclerViewAdapter mRecipesRecyclerViewAdapter;
   private List<Steps> stepsList = new ArrayList<>();
   FragmentManager fragmentManager = getSupportFragmentManager();
-  int recipePosition = 0;
-
+ // int recipePosition = 0;
+  int recipeId;
   private boolean mTwoPane;
 
   @Override
@@ -72,24 +74,34 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
     mBakingToolBar.hideOverflowMenu();
     mRecipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
     Intent intent = getIntent();
-    recipePosition = intent.getIntExtra(STEPS_LIST_KEY, -1);
+    //recipePosition = intent.getIntExtra(STEPS_LIST_KEY, -1);
+    recipeId=intent.getIntExtra(RECIPE_ID,-1);
     mRecipeViewModel.getAllBakingDetails()
         .observe(this, new Observer<List<BakingApiModel>>() {
           @Override
           public void onChanged(@Nullable List<BakingApiModel> bakingApiModels) {
-            stepsList = bakingApiModels.get(recipePosition).getSteps();
+            //stepsList = bakingApiModels.get(recipePosition).getSteps();
+                  for(BakingApiModel bm:bakingApiModels){
+                    if(bm.getId()==recipeId){
+                      stepsList=bm.getSteps();
+                    }
+                  }
+
+
           }
         });
     if (getResources().getBoolean(R.bool.isTablet)&&
         getResources().getConfiguration().orientation== Configuration.ORIENTATION_LANDSCAPE) {
       mTwoPane = true;
       if (savedInstanceState == null) {
-        createRequestedFragments(recipePosition);
+        //createRequestedFragments(recipePosition);
+        createRequestedFragments(recipeId);
       }
     } else {
       mTwoPane = false;
       if (savedInstanceState == null) {
-        setStepsFragment(recipePosition);
+        //setStepsFragment(recipePosition);
+        setStepsFragment(recipeId);
       }
     }
   }
@@ -103,14 +115,14 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
     fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
         android.R.anim.fade_out);
     Bundle bundle = new Bundle();
-    bundle.putInt(STEPS_LIST_KEY, positon);
-
+    //bundle.putInt(STEPS_LIST_KEY, positon);
+    bundle.putInt(RECIPE_ID, positon);
     stepsFragment.setArguments(bundle);
    // fragmentTransaction.addToBackStack(null);
     fragmentTransaction.commit();
   }
 
-  @Override
+/*  @Override
   public void setVideoPositionStepDescripition(int videoToplay) {
     String videoUrl=stepsList.get(videoToplay).getVideoURL();
     String stepDescription=stepsList.get(videoToplay).getDescription();
@@ -135,7 +147,34 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
           stepDescription);
     }
 
-  }
+  }*/
+
+   @Override
+   public void setVideoPositionStepDescripition(int videoToplay) {
+     String videoUrl=stepsList.get(videoToplay).getVideoURL();
+     String stepDescription=stepsList.get(videoToplay).getDescription();
+
+     if (!mTwoPane) {
+       mRecipeStepsVideoPlayerFragment= new RecipeStepsVideoPlayerFragment();
+       FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+       fragmentTransaction.replace(R.id.fragment_recipe_detailed_loader, mRecipeStepsVideoPlayerFragment);
+       fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
+           android.R.anim.fade_out);
+       Bundle bundle = new Bundle();
+       bundle.putString(VIDEO_URL_KEY, videoUrl);
+       bundle.putString(STEP_DESCRIPTION_KEY, stepDescription);
+       mRecipeStepsVideoPlayerFragment.setArguments(bundle);
+       fragmentTransaction.addToBackStack(null);
+       fragmentTransaction.commit();
+
+     } else {
+       mFragmentIngredientsLoader.setVisibility(View.GONE);
+       mFragmentVideoLoader.setVisibility(View.VISIBLE);
+       mRecipeStepsVideoPlayerFragment.initializePlayer(videoUrl);
+           //stepDescription);
+     }
+
+   }
 
   @Override
   public void setIngredientFragmentList() {
@@ -145,7 +184,8 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
       //if (mIngredientFragment == null) {
       mIngredientFragment = new IngredientFragment();
       Bundle bundle = new Bundle();
-      bundle.putInt(STEPS_LIST_KEY, recipePosition);
+      //bundle.putInt(STEPS_LIST_KEY, recipePosition);
+      bundle.putInt(RECIPE_ID, recipeId);
       mIngredientFragment.setArguments(bundle);
       mFragmentVideoLoader.setVisibility(View.GONE);
       mFragmentIngredientsLoader.setVisibility(View.VISIBLE);
@@ -162,7 +202,8 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
     if (mStepsFragment == null) {
       mStepsFragment = new StepsFragment();
       Bundle bundle = new Bundle();
-      bundle.putInt(STEPS_LIST_KEY, recipePosition);
+      //bundle.putInt(STEPS_LIST_KEY, recipePosition);
+      bundle.putInt(RECIPE_ID, recipePosition);
       mStepsFragment.setArguments(bundle);
       fragmentManager.beginTransaction()
           .add(R.id.fragment_recipe_detailed_loader, mStepsFragment, STEPS_FRAGMENT_TAG).commit();
@@ -189,7 +230,8 @@ public class RecipeDetailsActivity extends AppCompatActivity implements OnStepsF
     fragmentTransaction.setCustomAnimations(android.R.anim.fade_in,
         android.R.anim.fade_out);
     Bundle bundle = new Bundle();
-    bundle.putInt(STEPS_LIST_KEY, recipePosition);
+    //bundle.putInt(STEPS_LIST_KEY, recipePosition);
+    bundle.putInt(RECIPE_ID, recipeId);
     mIngredientFragment.setArguments(bundle);
     fragmentTransaction.addToBackStack(null);
     fragmentTransaction.commit();

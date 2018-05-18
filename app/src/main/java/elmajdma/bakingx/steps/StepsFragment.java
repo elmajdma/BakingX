@@ -2,6 +2,7 @@ package elmajdma.bakingx.steps;
 
 
 import static elmajdma.bakingx.MainActivity.STEPS_LIST_KEY;
+import static elmajdma.bakingx.RecipeDetailsActivity.RECIPE_ID;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -36,6 +37,7 @@ public class StepsFragment extends Fragment implements View.OnClickListener {
   RecyclerView stepsRecyclerView;
   private Parcelable savedRecyclerLayoutState;
   private int itemPosition;
+  private int recipeId;
   private List<Steps> stepsList=new ArrayList<>();
   private StepsRecyclerViewAdapter mStepsRecyclerViewAdapter;
   private RecipeViewModel mRecipeViewModel;
@@ -72,7 +74,8 @@ public class StepsFragment extends Fragment implements View.OnClickListener {
     ButterKnife.bind(this, view);
     setRecyclerview();
     Bundle bundle = getArguments();
-    itemPosition = bundle.getInt(STEPS_LIST_KEY);
+    //itemPosition = bundle.getInt(STEPS_LIST_KEY);
+    recipeId=bundle.getInt(RECIPE_ID);
     btOpenIngredientList.setOnClickListener(this);
     mRecipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
     mRecipeViewModel.getAllBakingDetails().observe(getActivity(), this::setStepsRecyclerView);
@@ -83,7 +86,13 @@ public class StepsFragment extends Fragment implements View.OnClickListener {
     stepsRecyclerView.setHasFixedSize(true);
   }
   private void setStepsRecyclerView(List<BakingApiModel> bakingList ) {
-    stepsList=bakingList.get(itemPosition).getSteps();
+    //stepsList=bakingList.get(itemPosition).getSteps();
+    for(BakingApiModel bm:bakingList){
+      if(bm.getId()==recipeId){
+        stepsList=bm.getSteps();
+      }
+    }
+
     StepsRecyclerViewAdapter.StepsAdapterOnClickHandler mListener= (position, v) -> {
       mStepPositionCallback.setVideoPositionStepDescripition(position);
 

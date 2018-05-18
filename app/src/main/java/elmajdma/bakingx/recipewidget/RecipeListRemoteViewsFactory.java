@@ -71,7 +71,8 @@ public class RecipeListRemoteViewsFactory
         servingNum);
     // Fill in the onClick PendingIntent Template using the specific plant Id for each item individually
         Bundle extras = new Bundle();
-            extras.putInt(RecipeDetailsActivity.STEPS_LIST_KEY, mCursor.getInt(recipeIdIndex));
+          // extras.putInt(RecipeDetailsActivity.STEPS_LIST_KEY, (mCursor.getInt(recipeIdIndex)));
+    extras.putInt(RecipeDetailsActivity.RECIPE_ID, (mCursor.getInt(recipeIdIndex)));
             Intent fillInIntent = new Intent();
             fillInIntent.putExtras(extras);
            remoteView.setOnClickFillInIntent(R.id.tv_widget_recipe_ingredient, fillInIntent);

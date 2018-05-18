@@ -60,6 +60,7 @@ public class RecipFragment extends Fragment {
   public static final String STEPS_LIST_KEY = "steps_key";
   public static final String POSITION_KEY = "position_key";
   private static final String BUNDLE_RECYCLEBR_LAYOUT = "recycler_layout";
+  public static final String RECIPE_ID= "reipeId";
   @BindView(R.id.recyclerview_recipes)
   RecyclerView recipeRecyclerView;
   List<BakingApiModel> bakingRecipList;
@@ -118,7 +119,8 @@ public class RecipFragment extends Fragment {
     RecipesRecyclerViewAdapter.RecipeAdapterOnClickHandler mListener=new RecipeAdapterOnClickHandler() {
       @Override
       public void onRecipeCardClick(int position, View v) {
-        startDetailedRecipeActivity(position);
+        //startDetailedRecipeActivity(position);
+        startDetailedRecipeActivity(bakingReciepList.get(position).getId());
       }
       @Override
       public void onRecipeHeartClick(int position, View v) {
@@ -147,7 +149,8 @@ public class RecipFragment extends Fragment {
   }
   private void startDetailedRecipeActivity(int stepList) {
     Intent intent = new Intent(getActivity(), RecipeDetailsActivity.class);
-    intent.putExtra(STEPS_LIST_KEY, stepList);
+    //intent.putExtra(STEPS_LIST_KEY, stepList);
+    intent.putExtra(RECIPE_ID, stepList);
     startActivity(intent);
   }
   private void setRecipeFavoritelist(BakingApiModel recipe, View view) throws IOException {

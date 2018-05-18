@@ -1,13 +1,13 @@
 package elmajdma.bakingx;
 
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
-import static android.support.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
@@ -37,6 +37,12 @@ public class MainActivityTest {
 
   @Test
   public void mainActivityTest() {
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
     ViewInteraction recyclerView = onView(
         allOf(withId(R.id.recyclerview_recipes),
             childAtPosition(
@@ -48,10 +54,28 @@ public class MainActivityTest {
     // The recommended way to handle such scenarios is to use Espresso idling resources:
     // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
     try {
-      Thread.sleep(700);
+      Thread.sleep(5000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+
+    ViewInteraction recyclerView2 = onView(
+        allOf(withId(R.id.recyclerview_steps),
+            childAtPosition(
+                withClassName(is("android.support.constraint.ConstraintLayout")),
+                0)));
+    recyclerView2.perform(actionOnItemAtPosition(0, click()));
+
+    // Added a sleep statement to match the app's execution delay.
+    // The recommended way to handle such scenarios is to use Espresso idling resources:
+    // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
+    try {
+      Thread.sleep(2000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    pressBack();
 
     ViewInteraction appCompatButton = onView(
         allOf(withId(R.id.bt_ingredient_list), withText("INGREDIENTS LIST"),
@@ -65,76 +89,51 @@ public class MainActivityTest {
 
     pressBack();
 
-    ViewInteraction recyclerView2 = onView(
-        allOf(withId(R.id.recyclerview_steps),
-            childAtPosition(
-                withClassName(is("android.support.constraint.ConstraintLayout")),
-                0)));
-    recyclerView2.perform(actionOnItemAtPosition(0, click()));
+    pressBack();
 
     // Added a sleep statement to match the app's execution delay.
     // The recommended way to handle such scenarios is to use Espresso idling resources:
     // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
     try {
-      Thread.sleep(5000);
+      Thread.sleep(2000);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
 
-    ViewInteraction appCompatImageButton = onView(
-        allOf(withId(R.id.exo_pause), withContentDescription("Pause"),
+ /*   ViewInteraction appCompatImageView = onView(
+        allOf(withId(R.id.img_favorite_heart),
             childAtPosition(
                 childAtPosition(
-                    withClassName(is("android.widget.LinearLayout")),
+                    withId(R.id.cardview_recipes_item),
                     0),
                 5),
             isDisplayed()));
-    appCompatImageButton.perform(click());
+    appCompatImageView.perform(click());*/
 
-    // Added a sleep statement to match the app's execution delay.
-    // The recommended way to handle such scenarios is to use Espresso idling resources:
-    // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+  /* ViewInteraction appCompatImageView =onData(withId(R.id.img_favorite_heart))
+        .inAdapterView(withId(R.id.cardview_recipes_item))
+        .atPosition(0)
+        .perform(click());*/
+    onView(withIndex(withId(R.id.img_favorite_heart), 2)).perform(click());
 
-    ViewInteraction frameLayout = onView(
-        allOf(withId(R.id.exo_fullscreen_button),
-            childAtPosition(
-                childAtPosition(
-                    withClassName(is("android.widget.LinearLayout")),
-                    1),
-                3),
-            isDisplayed()));
-    frameLayout.perform(click());
+  }
 
-    // Added a sleep statement to match the app's execution delay.
-    // The recommended way to handle such scenarios is to use Espresso idling resources:
-    // https://google.github.io/android-testing-support-library/docs/espresso/idling-resource/index.html
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+  public static Matcher<View> withIndex(final Matcher<View> matcher, final int index) {
+    return new TypeSafeMatcher<View>() {
+      int currentIndex = 0;
 
-    ViewInteraction frameLayout2 = onView(
-        allOf(withId(R.id.exo_fullscreen_button),
-            childAtPosition(
-                childAtPosition(
-                    withClassName(is("android.widget.LinearLayout")),
-                    1),
-                3),
-            isDisplayed()));
-    frameLayout2.perform(click());
+      @Override
+      public void describeTo(Description description) {
+        description.appendText("with index: ");
+        description.appendValue(index);
+        matcher.describeTo(description);
+      }
 
-    pressBack();
-
-    pressBack();
-
-    pressBack();
-
+      @Override
+      public boolean matchesSafely(View view) {
+        return matcher.matches(view) && currentIndex++ == index;
+      }
+    };
   }
 
   private static Matcher<View> childAtPosition(

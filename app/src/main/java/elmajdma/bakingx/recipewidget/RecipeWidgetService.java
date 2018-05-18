@@ -38,30 +38,7 @@ public class RecipeWidgetService extends IntentService {
     }
   }
   private void handleActionUpdateRecipeWidgets() {
-    /*List<WidgetRecipeModel> widgetRecipeModels=new ArrayList<>();
-    Cursor cursor = getContentResolver().query(
-        RecipeEntry.CONTENT_URI,
-        null,
-        null,
-        null,
-        RecipeEntry.COLUMN_RECIPE_TITLE);
 
-    if (cursor != null && cursor.getCount() > 0) {
-      int recipeTitleIndex = cursor.getColumnIndex(RecipeEntry.COLUMN_RECIPE_TITLE);
-      int recipeIngredientIndex = cursor.getColumnIndex(RecipeEntry.COLUMN_RECIPE_INGREDIENT);
-      int recipeServingIndex = cursor.getColumnIndex(RecipeEntry.COLUMN_SERVING);
-      int recipeIdIndex = cursor.getColumnIndex(RecipeEntry.COLUMN_RECIPE_ID);
-      long timeNow = System.currentTimeMillis();
-      try {
-        while (cursor.moveToNext()) {
-        widgetRecipeModels.add(new WidgetRecipeModel(cursor.getString(recipeTitleIndex),
-            cursor.getString(recipeIngredientIndex),cursor.getInt(recipeIdIndex),
-            cursor.getInt(recipeServingIndex)));
-        }
-      } finally {
-        cursor.close();
-      }
-    }*/
     AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
 
     int[] appWidgetIds = appWidgetManager

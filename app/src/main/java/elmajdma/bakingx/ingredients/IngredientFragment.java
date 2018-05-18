@@ -2,6 +2,7 @@ package elmajdma.bakingx.ingredients;
 
 
 import static elmajdma.bakingx.MainActivity.STEPS_LIST_KEY;
+import static elmajdma.bakingx.RecipeDetailsActivity.RECIPE_ID;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class IngredientFragment extends Fragment {
   private RecipeViewModel mRecipeViewModel;
   private List<Ingredients> ingredientList=new ArrayList<>();
   private int itemPosition;
+  private int recipeId;
 
   public IngredientFragment() {
     // Required empty public constructor
@@ -62,7 +64,8 @@ public class IngredientFragment extends Fragment {
     ButterKnife.bind(this, view);
     setRecyclerview();
     Bundle bundle = getArguments();
-    itemPosition = bundle.getInt(STEPS_LIST_KEY);
+    //itemPosition = bundle.getInt(STEPS_LIST_KEY);
+    recipeId=bundle.getInt(RECIPE_ID);
     mRecipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
     mRecipeViewModel.getAllBakingDetails().observe(getActivity(), this::setIngredientRecyclerView);
     return view;
@@ -72,7 +75,14 @@ public class IngredientFragment extends Fragment {
     ingredientRecyclerView.setHasFixedSize(true);
   }
   private void setIngredientRecyclerView(List<BakingApiModel> bakingReciepList) {
-    ingredientList = bakingReciepList.get(itemPosition).getIngredients();
+    //ingredientList = bakingReciepList.get(itemPosition).getIngredients();
+    for(BakingApiModel bm:bakingReciepList){
+      if(bm.getId()==recipeId){
+        ingredientList=bm.getIngredients();
+      }
+    }
+
+
     mIngredientRecyclerViewAdapter = new IngredientRecyclerViewAdapter(getContext(),
         ingredientList);
     if (savedRecyclerLayoutState != null) {

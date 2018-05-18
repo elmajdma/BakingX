@@ -63,7 +63,12 @@ public class StepsRecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.
     //String shortDescription=stepsRecipesList.get(position);
     if (steps!=null) {
       stepsViewHolder.tvStepsTitle.setText(steps.getShortDescription());
-      Picasso.with(context).load(R.drawable.cupcake).into(stepsViewHolder.imgVideoThumb);
+      if(!steps.getThumbnailURL().isEmpty()){
+        Picasso.with(context).load(steps.getThumbnailURL()).into(stepsViewHolder.imgVideoThumb);
+      }else{
+        Picasso.with(context).load(R.drawable.cupcake).into(stepsViewHolder.imgVideoThumb);
+      }
+
    }
   }
 
