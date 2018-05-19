@@ -74,7 +74,7 @@ import elmajdma.bakingx.R;
   private boolean startAutoPlay;
   private int startWindow;
   private Long startPosition;
-  private boolean playWhenReady;
+
 
   private DataSource.Factory mediaDataSourceFactory;
   private MediaSource mediaSource;
@@ -109,20 +109,17 @@ import elmajdma.bakingx.R;
     if(bundle!=null){
       videoUrl=bundle.getString(VIDEO_URL_KEY);
       }
-    initializePlayer(videoUrl);
-    stepDescription.setText(bundle.getString(STEP_DESCRIPTION_KEY));
-  return view;
-  }
-  @Override
-  public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-    super.onViewStateRestored(savedInstanceState);
     if (savedInstanceState != null) {
       startAutoPlay = savedInstanceState.getBoolean(KEY_AUTO_PLAY);
       startWindow = savedInstanceState.getInt(KEY_WINDOW);
       startPosition = savedInstanceState.getLong(KEY_POSITION);
-      Toast.makeText(getContext(),startPosition.toString(), Toast.LENGTH_LONG).show();
+
     }
+    initializePlayer(videoUrl);
+    stepDescription.setText(bundle.getString(STEP_DESCRIPTION_KEY));
+  return view;
   }
+
   @Override
   public void onSaveInstanceState(Bundle outState) {
 releasePlayer();
@@ -147,12 +144,11 @@ releasePlayer();
                     mediaSource = new  ExtractorMediaSource
                         .Factory(mediaDataSourceFactory)
                         .createMediaSource(Uri.parse(mediaUri));
+             mExoPlayer.prepare(mediaSource);
              if (startPosition!=null) {
                mExoPlayer.seekTo(startWindow,startPosition);
              }
-
-                 mExoPlayer.prepare(mediaSource);
-                 mExoPlayer.setPlayWhenReady(playWhenReady);
+             mExoPlayer.setPlayWhenReady(startAutoPlay);
 
             }
 
@@ -162,7 +158,7 @@ releasePlayer();
    if (mExoPlayer!= null) {
      startPosition = mExoPlayer.getCurrentPosition();
      startWindow = mExoPlayer.getCurrentWindowIndex();
-     playWhenReady = mExoPlayer.getPlayWhenReady();
+     startAutoPlay = mExoPlayer.getPlayWhenReady();
      mExoPlayer.release();
      mExoPlayer = null;
    }
